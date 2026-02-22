@@ -1,6 +1,7 @@
 package io.simonalbi.devcave;
 
 import io.simonalbi.devcave.listeners.welcome.JoinListener;
+import io.simonalbi.devcave.listeners.welcome.PidButtonListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -45,6 +46,7 @@ public class Main {
                         applicationProperties.getProperty("roles.welcome"),
                         applicationProperties.getProperty("categories.welcomeId")
                 ))
+                .addEventListeners(new PidButtonListener())
                 .build();
 
         jda.awaitReady();

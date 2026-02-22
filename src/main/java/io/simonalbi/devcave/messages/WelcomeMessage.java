@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.Arrays;
@@ -15,10 +16,32 @@ import java.util.stream.Collectors;
 
 public class WelcomeMessage extends GenericMessage {
 
-    private static final String DEFAULT_PATH = "messages/welcome.md";
+    private static final String DEFAULT_PATH = "messages/welcome/%d.md";
+    private static final int LAST_STEP = 4;
+    public static final String STEP_BUTTON_PREFIX = "welcome-";
 
-    public WelcomeMessage() {
-        super(DEFAULT_PATH);
+    private final int step;
+
+    private enum StepsButtons {
+        STEP_0("ssh unknown@devcave"),
+        STEP_1("run INSTRUCTIONS_PROTOCOL.exe"),
+        STEP_2("cat NETWORK_RULES.cfg"),
+        STEP_3("cat NETWORK_OBJECTIVE.md");
+
+        private final String label;
+
+        StepsButtons(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public WelcomeMessage(int step) {
+        super(String.format(DEFAULT_PATH, step));
+        this.step = step;
     }
 
     private List<Role> getSelectableCompanyRoles(Guild guild) {
@@ -37,9 +60,18 @@ public class WelcomeMessage extends GenericMessage {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void send(TextChannel channel) {
-        Guild guild = channel.getGuild();
+    public List<ActionRow> buildComponents(Guild guild) {
+        if (step < LAST_STEP) {
+            int nextStep = step + 1;
+
+            StepsButtons stepButton = StepsButtons.valueOf("STEP_" + step);
+            var nextButton = Button.primary(
+                    "welcome-" + nextStep,
+                    "▶ " + stepButton.getLabel()
+            );
+
+            return List.of(ActionRow.of(nextButton));
+        }
 
         List<Role> selectableRoles = getSelectableCompanyRoles(guild);
         StringSelectMenu.Builder menu = StringSelectMenu.create("pickrole_menu")
@@ -47,14 +79,16 @@ public class WelcomeMessage extends GenericMessage {
                 .setRequiredRange(1, 1);
 
         for (Role role : selectableRoles) {
-            String label = role.getName().trim();
-            menu.addOption(label, role.getId());
+            menu.addOption(role.getName().trim(), role.getId());
         }
 
-        ActionRow pickRoleMenu = ActionRow.of(menu.build());
+        return List.of(ActionRow.of(menu.build()));
+    }
 
+    @Override
+    public void send(TextChannel channel) {
         channel.sendMessage(getContent())
-                .setComponents(pickRoleMenu)
+                .setComponents(buildComponents(channel.getGuild()))
                 .queue();
     }
 }

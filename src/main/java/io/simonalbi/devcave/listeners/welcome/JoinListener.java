@@ -59,7 +59,7 @@ public class JoinListener extends ListenerAdapter {
         guild.createTextChannel(channelName, category)
                 .queue(channel -> {
                     channel.getManager().sync(category).queue();
-                    new WelcomeMessage().send(channel);
+                    new WelcomeMessage(0).send(channel);
                 });
     }
 }
