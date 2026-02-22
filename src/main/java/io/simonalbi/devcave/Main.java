@@ -1,18 +1,22 @@
 package io.simonalbi.devcave;
 
+import io.simonalbi.devcave.listeners.welcome.JoinListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.IOException;
 import java.util.Properties;
 
+// TODO Check if all roles exists
+// TODO Checks if all channels exists
 public class Main {
 
     private static final String applicationPropertiesPath = "application.properties";
-    private static String token = null;
+    public static Properties applicationProperties;
 
-    private static void loadToken() throws IOException {
-        Properties properties = new Properties();
+    private static void loadApplicationProperties() throws IOException {
+        Main.applicationProperties = new Properties();
 
         try (var input = Main.class
                 .getClassLoader()
@@ -22,10 +26,10 @@ public class Main {
                 throw new IllegalStateException("application.properties not found in resources");
             }
 
-            properties.load(input);
+            applicationProperties.load(input);
         }
 
-        Main.token = properties.getProperty("discord.token");
+        String token = applicationProperties.getProperty("discord.token");
 
         if (token == null || token.isBlank()) {
             throw new IllegalStateException("discord.token missing in application.properties");
@@ -33,9 +37,15 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        loadToken();
+        loadApplicationProperties();
 
-        JDA jda = JDABuilder.createDefault(token).build();
+        JDA jda = JDABuilder.createDefault(applicationProperties.getProperty("discord.token"))
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .addEventListeners(new JoinListener(
+                        applicationProperties.getProperty("roles.welcome"),
+                        applicationProperties.getProperty("categories.welcomeId")
+                ))
+                .build();
 
         jda.awaitReady();
         System.out.println("DevCave Bot is ready 🚀");
