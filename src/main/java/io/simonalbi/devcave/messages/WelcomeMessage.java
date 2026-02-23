@@ -24,9 +24,9 @@ public class WelcomeMessage extends GenericMessage {
 
     private enum StepsButtons {
         STEP_0("ssh unknown@devcave"),
-        STEP_1("run INSTRUCTIONS_PROTOCOL.exe"),
-        STEP_2("cat NETWORK_RULES.cfg"),
-        STEP_3("cat NETWORK_OBJECTIVE.md");
+        STEP_1("cat instructions"),
+        STEP_2("cat rules.conf"),
+        STEP_3("cat objective");
 
         private final String label;
 
