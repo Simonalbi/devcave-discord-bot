@@ -75,7 +75,7 @@ public class WelcomeMessage extends GenericMessage {
 
         List<Role> selectableRoles = getSelectableCompanyRoles(guild);
         StringSelectMenu.Builder menu = StringSelectMenu.create("pickrole_menu")
-                .setPlaceholder("Seleziona la tua compagnia…")
+                .setPlaceholder("Select your affiliation")
                 .setRequiredRange(1, 1);
 
         for (Role role : selectableRoles) {
