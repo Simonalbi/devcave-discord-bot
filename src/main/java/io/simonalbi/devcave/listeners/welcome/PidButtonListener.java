@@ -15,7 +15,7 @@ public class PidButtonListener extends ListenerAdapter {
     private static final Set<Long> ANIMATING_MESSAGE_IDS = ConcurrentHashMap.newKeySet();
 
     private static final String CURSOR = "█";
-    private static final long TICK_MS = 200;
+    private static final long TICK_MS = 100;
     private static final String STEP_SUFFIX = "█\r\n```";
 
     private static int countTripleBackticks(String s) {
