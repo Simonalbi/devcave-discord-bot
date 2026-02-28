@@ -12,6 +12,9 @@ repositories {
 dependencies {
     implementation 'ch.qos.logback:logback-classic:1.5.32'
     implementation 'net.dv8tion:JDA:5.1.2'
+    implementation "com.rometools:rome:2.1.0"
+    implementation "com.github.jknack:handlebars:4.5.0"
+    implementation 'org.jsoup:jsoup:1.17.2'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

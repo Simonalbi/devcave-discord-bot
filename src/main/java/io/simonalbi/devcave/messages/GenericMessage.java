@@ -1,15 +1,22 @@
 package io.simonalbi.devcave.messages;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import io.simonalbi.devcave.BotConfig;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public abstract class GenericMessage {
+    protected final BotConfig config;
+
     private final String messagePath;
 
-    public GenericMessage(String messagePath) {
+    public GenericMessage(BotConfig config, String messagePath) {
+        this.config = config;
         this.messagePath = messagePath;
     }
 
@@ -29,5 +36,12 @@ public abstract class GenericMessage {
         }
     }
 
-    public abstract void send(TextChannel channel);
+    public String getFormattedContent(Map<String, Object> context) throws IOException {
+        Handlebars handlebars = new Handlebars();
+        Template template = handlebars.compileInline(this.getContent());
+
+        return template.apply(context);
+    }
+
+    public abstract void send(TextChannel channel) throws IOException;
 }

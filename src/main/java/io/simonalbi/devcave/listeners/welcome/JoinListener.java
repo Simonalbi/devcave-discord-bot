@@ -1,5 +1,6 @@
 package io.simonalbi.devcave.listeners.welcome;
 
+import io.simonalbi.devcave.BotConfig;
 import io.simonalbi.devcave.messages.WelcomeMessage;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -11,12 +12,16 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class JoinListener extends ListenerAdapter {
-    private final String LOST_IN_THE_MAINFRAME_ROLE_ID;
-    private final String CATEGORY_ID;
+    private final BotConfig config;
 
-    public JoinListener(String lostInTheMainframeRoleId, String categoryId) {
-        this.LOST_IN_THE_MAINFRAME_ROLE_ID = lostInTheMainframeRoleId;
-        this.CATEGORY_ID = categoryId;
+    private final String LOST_IN_THE_MAINFRAME_ROLE_ID;
+    private final String WELCOM_CHANNELS_CATEGORY_ID;
+
+    public JoinListener(BotConfig config) {
+        this.config = config;
+
+        this.LOST_IN_THE_MAINFRAME_ROLE_ID = config.get("roles.lostInTheMainframe");
+        this.WELCOM_CHANNELS_CATEGORY_ID = config.get("categories.instances");
     }
 
     private static String randomPid() {
@@ -50,7 +55,7 @@ public class JoinListener extends ListenerAdapter {
             guild.addRoleToMember(member, lostRole).queue();
         }
 
-        Category category = guild.getCategoryById(CATEGORY_ID);
+        Category category = guild.getCategoryById(WELCOM_CHANNELS_CATEGORY_ID);
         if (category == null) return;
 
         String pid = randomPid();
@@ -59,7 +64,7 @@ public class JoinListener extends ListenerAdapter {
         guild.createTextChannel(channelName, category)
                 .queue(channel -> {
                     channel.getManager().sync(category).queue();
-                    new WelcomeMessage(0).send(channel);
+                    new WelcomeMessage(config, 0).send(channel);
                 });
     }
 }

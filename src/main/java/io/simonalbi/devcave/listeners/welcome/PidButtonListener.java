@@ -1,5 +1,6 @@
 package io.simonalbi.devcave.listeners.welcome;
 
+import io.simonalbi.devcave.BotConfig;
 import io.simonalbi.devcave.messages.WelcomeMessage;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -10,6 +11,8 @@ import java.util.concurrent.*;
 
 public class PidButtonListener extends ListenerAdapter {
 
+    private final BotConfig config;
+
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
 
     private static final Set<Long> ANIMATING_MESSAGE_IDS = ConcurrentHashMap.newKeySet();
@@ -17,6 +20,10 @@ public class PidButtonListener extends ListenerAdapter {
     private static final String CURSOR = "█";
     private static final long TICK_MS = 100;
     private static final String STEP_SUFFIX = "█\r\n```";
+
+    public PidButtonListener(BotConfig config) {
+        this.config = config;
+    }
 
     private static int countTripleBackticks(String s) {
         int count = 0;
@@ -102,9 +109,9 @@ public class PidButtonListener extends ListenerAdapter {
 
         event.deferEdit().queue();
 
-        WelcomeMessage next = new WelcomeMessage(step);
+        WelcomeMessage next = new WelcomeMessage(config, step);
 
-        String base = (step > 0) ? new WelcomeMessage(step - 1).getContent().replace(STEP_SUFFIX, "") : "";
+        String base = (step > 0) ? new WelcomeMessage(config, step - 1).getContent().replace(STEP_SUFFIX, "") : "";
         String target = next.getContent();
 
         String newPart;

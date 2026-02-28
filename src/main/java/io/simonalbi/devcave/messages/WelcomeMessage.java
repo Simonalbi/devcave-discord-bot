@@ -1,6 +1,6 @@
 package io.simonalbi.devcave.messages;
 
-import io.simonalbi.devcave.Main;
+import io.simonalbi.devcave.BotConfig;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -39,13 +39,13 @@ public class WelcomeMessage extends GenericMessage {
         }
     }
 
-    public WelcomeMessage(int step) {
-        super(String.format(DEFAULT_PATH, step));
+    public WelcomeMessage(BotConfig config, int step) {
+        super(config, String.format(DEFAULT_PATH, step));
         this.step = step;
     }
 
     private List<Role> getSelectableCompanyRoles(Guild guild) {
-        String excludedRolesRaw = Main.applicationProperties.getProperty("roles.exclude", "");
+        String excludedRolesRaw = config.get("roles.exclude", "");
 
         Set<String> excludedRoleIds = Arrays.stream(excludedRolesRaw.split(","))
                 .map(String::trim)
